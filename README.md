@@ -1,6 +1,10 @@
+# ※아직 미완임※
+
 # 번지넷 API 튜토리얼
 이 튜토리얼은 번지 API의 간단한 사용법에 관한 튜토리얼입니다.    
-특히, 데스티니 2에 관련된 사항을 주로 다룰것입니다.    
+특히, 데스티니 2에 관련된 사항을 주로 다룰것입니다.
+    
+아주 기초적인 내용만을 서술 할 예정이니 참고해주세요.    
     
 이 튜토리얼은 windows10 + javascript/node.js 환경을 기준으로 작성되었습니다.
 
@@ -13,9 +17,21 @@
 
 
 # 목차
-1. [개발 환경 세팅](#1--)
-   1. [node.js 설치](#1-1-nodejs-)
+1. 개발 환경 세팅
+   1. node.js 설치
+   2. 프로젝트 설정
+2. 번지 애플리케이션 등록
+3. REST API 기초지식
+4. 실제로 API를 사용해 보기 위한 기초 코드 세팅
+   1. 초심자를 위한 소스코드
+   2. 번지 API 기초 설정 관련 사항 (숙련자용)
+5. API 실제로 사용해보기
 
+서술 예정 내용
+* JSON
+* Path Parameter
+* Querystring
+* OAuth (Require Domain, Web Server, HTTPS Certification)
 
 # 1.개발 환경 세팅
 본 튜토리얼은 windows10 + javascript/node.js 환경을 기준으로 작성되었습니다.    
@@ -168,7 +184,7 @@ const requestOption = {
 위의 코드를 모두 작성했다면 이제 API를 사용할 준비가 완료된것입니다!
 
 
-## 4-2. 번지 API 기초 설정 (숙련자용)
+## 4-2. 번지 API 기초 설정 관련 사항 (숙련자용)
 
 아래는 번지 API용 http request header 폼 입니다.
 
@@ -184,8 +200,6 @@ method랑 url 관련 내용은 생략하도록 하겠습니다.
 
 
 ## 5. API 실제로 사용해보기
-API에 실제로 request를 보내는 내용임으로 숙련자이신 분은 6번으로 넘어가주세요.    
-    
 이번엔 실제로 API에서 데이터를 받아와 봅시다.    
 3번에서처럼 Destiny2.GetDestinyManifest 엔드포인트를 예시로 진행 해 보겠습니다.    
     
