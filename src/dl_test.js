@@ -1,3 +1,5 @@
+// 위에서 만든 dl_downloader 로드
+// 만약 파일 이름이 다르면 해당 파일명으로 바꿔주세요
 const Downloader = require("./db_downloader");
 
 (async () => {
