@@ -27,7 +27,8 @@
    2. 번지 API 기초 설정 관련 사항 (숙련자용)
 5. API 실제로 사용해보기 (데스티니 마니페스트 받아오기)
 6. JSON이란?
-7. 마니페스트에서 데스티니 DB 받아오기
+7. 7. 데스티니 마니페스트 다운로드 받기
+8. 마니페스트로부터 데스티니 DB 받아오기
 
 > 서술 예정 내용
 > * Path Parameter
@@ -320,7 +321,7 @@ const myFavTitanExotic = titan.exotics[0];
 JSON에 관한 내용은 조금만 찾아봐도 많이 나오니, 봐도 모르겠으면 따로 찾아보시는게 나을겁니다.    
 그럼 이제 실제로 데스티니 아이템 DB를 받아와 보죠!
 
-# 7. 마니페스트에서 데스티니 DB 받아오기
+# 7. 데스티니 마니페스트 다운로드 받기
 5번에서, Destiny2.GetDestinyManifest 엔드포인트로부터 데스티니 마니페스트를 받아왔었습니다.    
 이 마니페스트를 이용하기 위해, 우선은 로컬에 파일로 저장해 봅시다.
 
@@ -437,3 +438,100 @@ IDE 사용하시면 알아서 리포매팅 하시면 되는데, 이런거 없으
 
 **오브젝트 내의 문자열 값들은 버전에 따라 바뀔 수 있음에 주의하세요! ("/common/destiny/~~~"에 해당하는 것들)**    
     
+# 8. 마니페스트로부터 데스티니 DB 받아오기
+우선은, 위에서 받아온 마니페스트 파일을 사용하기 위한 모듈을 만들어 봅시다.
+새 파일을 만들어 주세요. 예제에서는 db_downloader.js로 진행합니다.    
+    
+아래의 소스를 만들어주세요.
+```javascript
+const axios = require("axios");
+const fs = require("fs");
+const path = require("path")
+
+class DBDownloader {
+    // 데스티니 마니페스트 로드
+    static #MANIFEST = JSON.parse(fs.readFileSync("./manifest.json"));
+    static #JSON_DB = this.#MANIFEST.Response.jsonWorldComponentContentPaths;
+
+    static #BUNGIE_NET_URL = "https://www.bungie.net/";
+
+    // 마니페스트로부터 데스티니 DB 다운로드
+    static async downloadDB(lang, component) {
+        const targetPath = this.#JSON_DB[lang][component];
+        const url = this.#BUNGIE_NET_URL + targetPath;
+        const fileName = `${lang}/${component}.json`;
+
+        const hasLangDir = await this.#hasLangDir(lang);
+
+        if (!hasLangDir) {
+            await this.#createLangDir(lang);
+        }
+
+        await this.#downloadFile(url, fileName);
+    }
+
+    // 특정 언어의 DB 모두 다운로드
+    static async downloadLanguageDB(lang) {
+        console.log(`Download All DB: "${lang}"`);
+
+        const paths = this.#JSON_DB[lang];
+        const components = Object.keys(paths);
+        for (const component of components) {
+            await this.downloadDB(lang, component);
+        }
+    }
+    
+    static async #downloadFile(url, filePath) {
+        const response = await axios.get(url);
+        const data = JSON.stringify(response.data);
+
+        const resolvedPath = path.resolve(`./${filePath}`);
+        await fs.promises.writeFile(resolvedPath, data);
+        console.log(`File Downloaded From "${url}" to ${resolvedPath}`);
+    }
+
+    static async #hasLangDir(lang) {
+        let hasDir = false;
+
+        try {
+            const stat = await fs.promises.stat(`./${lang}`);
+            hasDir = stat.isDirectory();
+        } catch {
+            hasDir = false;
+        }
+
+
+        return hasDir;
+    }
+
+    static async #createLangDir(lang) {
+        await fs.promises.mkdir(lang);
+    }
+}
+
+module.exports = DBDownloader;
+```
+간단하게 마니페스트를 참조해서 DB파일을 다운로드하는 클래스를 만들었습니다.    
+    
+이제 실제로 DB파일을 다운로드하기 위한 소스 파일을 만들어 봅시다.    
+대충 dl_test.js로 만들도록 합시다.
+
+```javascript
+const Downloader = require("./db_downloader");
+
+(async () => {
+    // 한국어 DB파일 전부 다운로드 받기
+    await Downloader.downloadLanguageDB("ko");
+
+    // 특정 DB만 다운로드 받고 싶으면 아래처럼 해주세요
+    // await Downloader.downloadDB("ko", "DestinyInventoryItemDefinition");
+    // 한국어 데스티니 아이템 DB만 다운로드 받는 코드입니다.
+})();
+```
+완성되었다면 실행해 봅시다.
+
+```
+node dl_test.js
+```
+
+그러면 ko라는 폴더가 생성되면서 그 안에 한국어 데스티니 DB가 다운로드 될 것입니다. (시간 좀 걸림)    
