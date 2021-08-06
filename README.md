@@ -25,16 +25,18 @@
 4. 실제로 API를 사용해 보기 위한 기초 코드 세팅
    1. 초심자를 위한 소스코드
    2. 번지 API 기초 설정 관련 사항 (숙련자용)
-5. API 실제로 사용해보기
+5. API 실제로 사용해보기 (데스티니 마니페스트 받아오기)
+6. JSON이란?
+7. 마니페스트에서 데스티니 DB 받아오기
 
-서술 예정 내용
-* JSON
-* Path Parameter
-* Querystring
-* OAuth (Require Domain, Web Server, HTTPS Certification)
+> 서술 예정 내용
+> * Path Parameter
+> * Querystring
+> * OAuth (Require Domain, Web Server, HTTPS Certification)
+> * Post Method Endpoints
 
 # 1.개발 환경 세팅
-본 튜토리얼은 windows10 + javascript/node.js 환경을 기준으로 작성되었습니다.    
+> 본 튜토리얼은 windows10 + javascript/node.js 환경을 기준으로 작성되었습니다.    
 현 섹션은 node.js 및 javascript, 그 외에 기본적인 라이브러리를 설치하는 내용이므로 필요 없으신분은 스킵해서 2번으로 가셔도 상관 없습니다.
 
 
@@ -104,7 +106,7 @@ API키를 발급받기 위해 아래로 들어가서 로그인합니다.
 
 
 # 3. REST API 기초지식
-해당 섹션은 REST API 이용에 관한 아주 기초적인 지식에 관한 내용임으로 필요없으신분은 5번으로 가셔도 상관 없습니다.    
+> 해당 섹션은 REST API 이용에 관한 아주 기초적인 지식에 관한 내용임으로 필요없으신분은 5번으로 가셔도 상관 없습니다.    
 더불어서, 아래의 해당 섹션의 내용은 번지 API를 사용하기 위한 내용이므로 실제 REST API의 정의와는 다소 다른 점이 있음을 미리 알립니다.    
     
 REST API를 번지 API를 사용하기 위한 내용으로만 최대한 간추려서 설명하면, 
@@ -138,8 +140,7 @@ GET 메소드에 관한 내용은 나중에 실제로 API를 사용해 볼 때 �
 
 
 # 4. 실제로 API를 사용해 보기 위한 기초 코드 세팅
-여기에선 API 사용을 위한 기초 코드를 작성하게 될 것입니다.    
-
+> 여기에선 API 사용을 위한 기초 코드를 작성하게 될 것입니다.    
 REST API에 관련해 숙련되신 분들은 4-2번으로 바로 가주세요!
 
 
@@ -199,7 +200,7 @@ X-API-KEY 헤더를 2번에서 발급받은 API KEY로 설정해주시고 reques
 method랑 url 관련 내용은 생략하도록 하겠습니다.
 
 
-## 5. API 실제로 사용해보기
+# 5. API 실제로 사용해보기 (데스티니 마니페스트 받아오기)
 이번엔 실제로 API에서 데이터를 받아와 봅시다.    
 3번에서처럼 Destiny2.GetDestinyManifest 엔드포인트를 예시로 진행 해 보겠습니다.    
     
@@ -266,3 +267,173 @@ node test.js
 가 되겠네요.
 
 위의 명령어를 실행하면 API로부터 가져온 데이터가 출력됩니다. 짠 짜잔!
+
+
+# 6. JSON이란?
+> 본 섹션은 API로부터 받아온 JSON 형식의 데이터를 처리하기위한 최소한의 설명을 서술합니다.    
+이미 JSON 관련 지식에 대해서 알고 계신 분은 스킵하셔도 문제 없습니다.    
+
+JSON은 데이터의 전달, 저장 등을 위한 일종의 포멧입니다.    
+우선은 설명을 위해 JSON의 예시를 보도록 합시다.   
+
+```json
+{
+   "tian": {
+      "intelligence": 0,
+      "isTitanStupid": true,
+      "favoriteSubclass": "arc middle tree",
+      "exotics": [
+         "CUIRASS OF THE FALLING STAR",
+         "LION RAMPANT"
+      ]
+   }
+}
+```
+
+위 예제의 구조를 해석해 보면 아래와 같습니다.
+> titan 오브젝트 안에는 intelligence, isTitanStupid, favoriteSubclass, exotics라는 4개의 오브젝트가 있다.    
+> intelligence에는 number 타입 (말 대로 숫자를 의미합니다)의 값인 0이 들어가 있다.    
+> isTitanStupid에는 boolean타입 (true 혹은 false를 의미합니다)의 값인 true가 들어가 있다.    
+> favoriteSubclass에는 string타입 (문자열을 의미합니다)의 값인 "arc middle tree"가 들어가 있다.    
+> exotics에는 string타입의 배열 (같은 타입의 값을 여러개 포함하는 오브젝트)이 들어가 있고, 이 배열에는
+> 문자열의 값인 "CUIRASS OF THE FALLING STAR"와 "LION RAMPANT"가 들어가 있다.
+
+위의 내용을 이용해서, 소스코드 내에서 활용하려면 아래와 같이 되죠.
+
+```javascript
+// titan의 intelligence의 값인 0이 intelOfTitan에 들어가게 됨
+const intelOfTitan = titan.intelligence;
+
+// titan의 isTitanStupid의 값인 true가 stupidityOftitan에 들어가게 됨
+const stupidityOfTitan = titan.isStupid;
+
+// titan의 favoriteSubclass의 값인 "arc middle tree"가 favTitanClass 안에 들어가게 됨
+const favTitanClass = titan.favoriteSubclass;
+
+// titan의 exotics의 첫번쨰 값인 "CUIRASS OF THE FALLING STAR"가 myFavTitanExotic에 들어가게 됨
+const myFavTitanExotic = titan.exotics[0];
+
+/* 참고: 배열은 0번부터 시작합니다. 1번째는 [0], 5번째는 [4] 이런식으로 사용한다는 소리. */
+```
+
+대충 이해가 가시나요?    
+JSON에 관한 내용은 조금만 찾아봐도 많이 나오니, 봐도 모르겠으면 따로 찾아보시는게 나을겁니다.    
+그럼 이제 실제로 데스티니 아이템 DB를 받아와 보죠!
+
+# 7. 마니페스트에서 데스티니 DB 받아오기
+5번에서, Destiny2.GetDestinyManifest 엔드포인트로부터 데스티니 마니페스트를 받아왔었습니다.    
+이 마니페스트를 이용하기 위해, 우선은 로컬에 파일로 저장해 봅시다.
+
+```javascript
+const axios = require("axios");
+const fs = require("fs");
+```
+소스코드의 맨 위에 의 부분에 const fs = require("fs");를 추가해 줍시다.
+
+```javascript
+(async () => {
+    const response = await axios(requestOption);
+    await fs.promises.writeFile("./manifest.json", JSON.stringify(response.data));
+    console.log(response.data);
+})();
+```
+소스코드의 아랫부분에 await fs.promises.writeFile("./manifest.json", JSON.stringify(response.data)); 를 추가해 줍니다.    
+    
+소스코드에 추가가 끝낫고, 저장을 완료했다면 다시한번 실행해 줍시다.   
+
+위에서 했던것처럼 cmd창에서
+```
+node test.js
+```
+를 써 주시면 되겠죠.    
+    
+실행하고나면 manifest.json이라는 파일이 생성 될 것입니다.    
+파일을 열어보면 한줄로 simplify 되어서 읽기 힘든 json 파일이 나올것입니다.    
+IDE 사용하시면 알아서 리포매팅 하시면 되는데, 이런거 없으신 분들을 위해 정리하자면,
+```json
+{
+   "Response": {
+      "jsonWorldComponentContentPaths": {
+         "ko": {
+            "DestinyNodeStepSummaryDefinition": "/common/destiny2_content/json/ko/DestinyNodeStepSummaryDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyArtDyeChannelDefinition": "/common/destiny2_content/json/ko/DestinyArtDyeChannelDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyArtDyeReferenceDefinition": "/common/destiny2_content/json/ko/DestinyArtDyeReferenceDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyPlaceDefinition": "/common/destiny2_content/json/ko/DestinyPlaceDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyActivityDefinition": "/common/destiny2_content/json/ko/DestinyActivityDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyActivityTypeDefinition": "/common/destiny2_content/json/ko/DestinyActivityTypeDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyClassDefinition": "/common/destiny2_content/json/ko/DestinyClassDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyGenderDefinition": "/common/destiny2_content/json/ko/DestinyGenderDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyInventoryBucketDefinition": "/common/destiny2_content/json/ko/DestinyInventoryBucketDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyRaceDefinition": "/common/destiny2_content/json/ko/DestinyRaceDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyTalentGridDefinition": "/common/destiny2_content/json/ko/DestinyTalentGridDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyUnlockDefinition": "/common/destiny2_content/json/ko/DestinyUnlockDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyMaterialRequirementSetDefinition": "/common/destiny2_content/json/ko/DestinyMaterialRequirementSetDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinySandboxPerkDefinition": "/common/destiny2_content/json/ko/DestinySandboxPerkDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyStatGroupDefinition": "/common/destiny2_content/json/ko/DestinyStatGroupDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyProgressionMappingDefinition": "/common/destiny2_content/json/ko/DestinyProgressionMappingDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyFactionDefinition": "/common/destiny2_content/json/ko/DestinyFactionDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyVendorGroupDefinition": "/common/destiny2_content/json/ko/DestinyVendorGroupDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyRewardSourceDefinition": "/common/destiny2_content/json/ko/DestinyRewardSourceDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyUnlockValueDefinition": "/common/destiny2_content/json/ko/DestinyUnlockValueDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyRewardMappingDefinition": "/common/destiny2_content/json/ko/DestinyRewardMappingDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyRewardSheetDefinition": "/common/destiny2_content/json/ko/DestinyRewardSheetDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyItemCategoryDefinition": "/common/destiny2_content/json/ko/DestinyItemCategoryDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyDamageTypeDefinition": "/common/destiny2_content/json/ko/DestinyDamageTypeDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyActivityModeDefinition": "/common/destiny2_content/json/ko/DestinyActivityModeDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyMedalTierDefinition": "/common/destiny2_content/json/ko/DestinyMedalTierDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyAchievementDefinition": "/common/destiny2_content/json/ko/DestinyAchievementDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyActivityGraphDefinition": "/common/destiny2_content/json/ko/DestinyActivityGraphDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyActivityInteractableDefinition": "/common/destiny2_content/json/ko/DestinyActivityInteractableDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyBondDefinition": "/common/destiny2_content/json/ko/DestinyBondDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyCharacterCustomizationCategoryDefinition": "/common/destiny2_content/json/ko/DestinyCharacterCustomizationCategoryDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyCharacterCustomizationOptionDefinition": "/common/destiny2_content/json/ko/DestinyCharacterCustomizationOptionDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyCollectibleDefinition": "/common/destiny2_content/json/ko/DestinyCollectibleDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyDestinationDefinition": "/common/destiny2_content/json/ko/DestinyDestinationDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyEntitlementOfferDefinition": "/common/destiny2_content/json/ko/DestinyEntitlementOfferDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyEquipmentSlotDefinition": "/common/destiny2_content/json/ko/DestinyEquipmentSlotDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyStatDefinition": "/common/destiny2_content/json/ko/DestinyStatDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyInventoryItemDefinition": "/common/destiny2_content/json/ko/DestinyInventoryItemDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyInventoryItemLiteDefinition": "/common/destiny2_content/json/ko/DestinyInventoryItemLiteDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyItemTierTypeDefinition": "/common/destiny2_content/json/ko/DestinyItemTierTypeDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyLocationDefinition": "/common/destiny2_content/json/ko/DestinyLocationDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyLoreDefinition": "/common/destiny2_content/json/ko/DestinyLoreDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyMetricDefinition": "/common/destiny2_content/json/ko/DestinyMetricDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyObjectiveDefinition": "/common/destiny2_content/json/ko/DestinyObjectiveDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyPlatformBucketMappingDefinition": "/common/destiny2_content/json/ko/DestinyPlatformBucketMappingDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyPlugSetDefinition": "/common/destiny2_content/json/ko/DestinyPlugSetDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyPowerCapDefinition": "/common/destiny2_content/json/ko/DestinyPowerCapDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyPresentationNodeDefinition": "/common/destiny2_content/json/ko/DestinyPresentationNodeDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyProgressionDefinition": "/common/destiny2_content/json/ko/DestinyProgressionDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyProgressionLevelRequirementDefinition": "/common/destiny2_content/json/ko/DestinyProgressionLevelRequirementDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyRecordDefinition": "/common/destiny2_content/json/ko/DestinyRecordDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyRewardAdjusterPointerDefinition": "/common/destiny2_content/json/ko/DestinyRewardAdjusterPointerDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyRewardAdjusterProgressionMapDefinition": "/common/destiny2_content/json/ko/DestinyRewardAdjusterProgressionMapDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyRewardItemListDefinition": "/common/destiny2_content/json/ko/DestinyRewardItemListDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinySackRewardItemListDefinition": "/common/destiny2_content/json/ko/DestinySackRewardItemListDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinySandboxPatternDefinition": "/common/destiny2_content/json/ko/DestinySandboxPatternDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinySeasonDefinition": "/common/destiny2_content/json/ko/DestinySeasonDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinySeasonPassDefinition": "/common/destiny2_content/json/ko/DestinySeasonPassDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinySocketCategoryDefinition": "/common/destiny2_content/json/ko/DestinySocketCategoryDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinySocketTypeDefinition": "/common/destiny2_content/json/ko/DestinySocketTypeDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyTraitDefinition": "/common/destiny2_content/json/ko/DestinyTraitDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyTraitCategoryDefinition": "/common/destiny2_content/json/ko/DestinyTraitCategoryDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyUnlockCountMappingDefinition": "/common/destiny2_content/json/ko/DestinyUnlockCountMappingDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyUnlockEventDefinition": "/common/destiny2_content/json/ko/DestinyUnlockEventDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyUnlockExpressionMappingDefinition": "/common/destiny2_content/json/ko/DestinyUnlockExpressionMappingDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyVendorDefinition": "/common/destiny2_content/json/ko/DestinyVendorDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyMilestoneDefinition": "/common/destiny2_content/json/ko/DestinyMilestoneDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyActivityModifierDefinition": "/common/destiny2_content/json/ko/DestinyActivityModifierDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyReportReasonCategoryDefinition": "/common/destiny2_content/json/ko/DestinyReportReasonCategoryDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyArtifactDefinition": "/common/destiny2_content/json/ko/DestinyArtifactDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyBreakerTypeDefinition": "/common/destiny2_content/json/ko/DestinyBreakerTypeDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyChecklistDefinition": "/common/destiny2_content/json/ko/DestinyChecklistDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json",
+            "DestinyEnergyTypeDefinition": "/common/destiny2_content/json/ko/DestinyEnergyTypeDefinition-339ab5ed-b919-4d17-9328-cc340f8c2b61.json"
+         }
+      }
+   }
+}
+```
+위의 내용을 사용하게 될 것입니다.
+
+**오브젝트 내의 문자열 값들은 버전에 따라 바뀔 수 있음에 주의하세요! ("/common/destiny/~~~"에 해당하는 것들)**    
+    
